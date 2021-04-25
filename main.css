@@ -1,0 +1,28 @@
+.gameWrapper {
+    display: flex;
+}
+
+.player {
+    width: 25%;
+    background-color: #78f4e8;
+    margin: 1rem;
+    padding: 1rem;
+    font-size:1.2rem;
+}
+
+main {
+    padding: 2rem;
+    font-family: "Roboto", sans-serif;
+}
+
+h2 {
+    text-transform: capitalize;
+}
+
+#stats {
+    background-color: #fea175;
+    margin: 1rem;
+    padding: 1rem;
+    font-size: 2rem;
+    text-align: center;
+}

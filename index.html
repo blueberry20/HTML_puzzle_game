@@ -1,0 +1,189 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+  <meta charset="utf-8">
+  <title>Creative Mango Design </title>
+  <meta name="description" content="Creative Mango Design. Creator of Animal Action cards, DIY Advent Calendar Kit, and other games and activities for kids. Author/illustrator Olga Smith - created by mom for her child.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="google-site-verification" content="kOZL2GXFgFikI3ovwDiWV7N0oxWnIkYg8rEMivmN2LY" />
+  <meta property="og:title" content="Creative Mango. Fun and engaging games for kids. Created by mom for her child.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://www.creativemangodesign.com">
+  <meta property="og:image" content="http://www.creativemangodesign.com/img/cover.jpg">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="main.css">
+
+  <meta name="theme-color" content="#fafafa">
+</head>
+
+<body>
+ <main>
+     <div>
+         <!-- <button type="button">Run game</button> -->
+         <div class="gameWrapper">
+             <div id="player1" class="player"></div>
+             <div id="player2" class="player"></div>
+             <div id="player3" class="player"></div>
+             <div id="player4" class="player"></div>
+         </div>
+         <div id="stats"></div>
+         <div id="bugCounter"></div>
+     </div>
+ </main>
+
+
+
+  <script>
+    window.onload = function() {
+    const spinnerElements = ["a", "li", "h2", "bug", "li", "img", "bug fix", "li", "h1", "p", "li", "bug fix"];
+
+    const bugChips = ["a", "li", "h2", "li", "img", "li", "h1", "p", "li", "a", "li", "h2", "li", "img", "li", "h1", "p", "li"];
+
+    const statsDiv = document.getElementById("stats");
+    const bugCounterDiv = document.getElementById("bugCounter");
+
+    class Player {
+        constructor(name) {
+            this.name = name;
+            this.filledSpaces = {
+                "a": false,
+                "h1": false,
+                "h2": false,
+                "img": false,
+                "p": false,
+                "li": 0
+            };
+            this.bugs = [],
+            this.bugCounter = 0;
+        }
+        takeTurn(){
+            this.spinWheel();
+        }
+        spinWheel(){
+            const randomElement =  spinnerElements[Math.floor(Math.random() * spinnerElements.length)];
+
+            let playerDiv= document.getElementById(this.name);
+            playerDiv.innerHTML += randomElement +"<br/>";
+
+            if (randomElement == "li"){
+                if (this.filledSpaces["li"] < 4) {
+                    this.filledSpaces["li"] +=1;
+                }
+            }
+            else if (randomElement == "bug"){
+                this.bugCounter++;
+                const bugChip = this.takeBugChip();
+                playerDiv.innerHTML += "Took bug chip: " + bugChip +"<br/>";
+
+                //check if that space is filled
+                if (this.filledSpaces[bugChip] == true || this.filledSpaces[bugChip] > 0){
+
+                    //check if bug for this tag already exists - don't add if exists
+                    // if (this.bugs.includes(bugChip)){
+                    //     if (bugChip == "li"){
+
+                    //     }
+                    // }
+                    // else { //if bug for this tag doesn't exist yet
+                    //     this.bugs.push(bugChip);
+                    // }
+
+                    this.bugs.push(bugChip);
+                    playerDiv.innerHTML += "Current bugs: " + this.bugs +"<br/>";
+                }
+            }
+            else if (randomElement == "bug fix"){
+                //check if any bugs are present 
+                if (this.bugs.length > 0){
+                    this.bugs.shift();
+                    playerDiv.innerHTML += "Bug fixed. Current bugs: " + this.bugs +"<br/>";
+                }
+                else {
+                    //no bugs present, take another turn
+                    playerDiv.innerHTML += "Take extra turn <br/>";
+                    this.spinWheel();
+                }
+                              
+            }
+            else {
+                if (this.filledSpaces[randomElement] == false) {
+                    this.filledSpaces[randomElement] = true;
+                } 
+            }
+        }
+        takeBugChip(){
+            return bugChips[Math.floor(Math.random() * bugChips.length)];       
+        }
+        hasWon(){
+            return (!Object.values(this.filledSpaces).includes(false) && this.filledSpaces["li"] == 4 && this.bugs.length ==0);
+        }
+    }
+
+    class PuzzlePieces {
+        constructor(){
+            this.pieces = {
+                h1: 4,
+                h2: 4,
+                p: 4,
+                img: 4,
+                a: 4,
+                li: 16
+            };
+        }
+    }
+
+    class Game {
+        constructor(numberOfPlayers){
+            this.numberOfPlayers = numberOfPlayers;
+            this.gameOver = false;
+            this.players = [];
+        }
+        start(){
+            for (let i=0; i < this.numberOfPlayers; i++){
+                let player = new Player(`player${i+1}`);
+                this.players.push(player);
+
+                let playerDiv = document.getElementById(`player${i+1}`);
+                playerDiv.innerHTML = "<h2>" + player.name + "</h2><br/>";
+            }
+
+            let turnCounter = 0;
+            while (!this.gameOver){
+                turnCounter ++;
+                for (let player of this.players){
+                    player.takeTurn(player.name);
+                    if (player.hasWon()) {
+                        this.gameOver = true;
+                        statsDiv.innerHTML += `${player.name} won <br/>`;
+                        statsDiv.innerHTML += `It took ${turnCounter} turns`;
+                        this.endGame();
+                        break;
+                    }
+                }
+                
+            }            
+        }
+
+        endGame(){
+            let bugTotal = 0;
+            for (let player of this.players){
+                bugCounterDiv.innerHTML += `${player.name} had ${player.bugCounter} bugs <br/>`;
+                bugTotal += player.bugCounter;
+            }
+            const bugAverage = bugTotal/ this.numberOfPlayers;
+            bugCounterDiv.innerHTML += `Bug Average: ${bugAverage}<br/>`;
+        }
+    }
+
+
+    let game = new Game(4);
+    game.start();
+    }
+  
+  </script>
+
+</body>
+
+</html>
