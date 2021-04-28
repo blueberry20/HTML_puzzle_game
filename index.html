@@ -20,17 +20,19 @@
 
 <body>
  <main>
-     <div>
-         <!-- <button type="button">Run game</button> -->
-         <div class="gameWrapper">
-             <div id="player1" class="player"></div>
-             <div id="player2" class="player"></div>
-             <div id="player3" class="player"></div>
-             <div id="player4" class="player"></div>
-         </div>
-         <div id="stats"></div>
-         <div id="bugCounter"></div>
-     </div>
+     <div id="games">
+        <div class="gameWrapper">
+            <!-- <button type="button">Run game</button> -->
+            <div class="flex players">
+                <div id="player1" class="player"></div>
+                <div id="player2" class="player"></div>
+                <div id="player3" class="player"></div>
+                <div id="player4" class="player"></div>
+            </div>
+            <div id="stats"></div>
+            <div id="bugCounter"></div>
+        </div>
+    </div>
  </main>
 
 
@@ -121,31 +123,21 @@
         }
     }
 
-    class PuzzlePieces {
-        constructor(){
-            this.pieces = {
-                h1: 4,
-                h2: 4,
-                p: 4,
-                img: 4,
-                a: 4,
-                li: 16
-            };
-        }
-    }
-
     class Game {
-        constructor(numberOfPlayers){
+        constructor(numberOfPlayers, gameId){
             this.numberOfPlayers = numberOfPlayers;
+            this.gameId = gameId;
             this.gameOver = false;
             this.players = [];
         }
         start(){
+            this.createHTML(this.numberOfPlayers, this.gameId);
+
             for (let i=0; i < this.numberOfPlayers; i++){
                 let player = new Player(`player${i+1}`);
                 this.players.push(player);
 
-                let playerDiv = document.getElementById(`player${i+1}`);
+                let playerDiv = document.getElementById(`player${i+1}${this.gameId}`);
                 playerDiv.innerHTML = "<h2>" + player.name + "</h2><br/>";
             }
 
@@ -166,6 +158,30 @@
             }            
         }
 
+        createHTML(numberOfPlayers, gameId){
+            let games = document.getElementById("games");
+            let gameWrapper = document.createElement('div');
+            gameWrapper.setAttribute("id", `gameWrapper${gameId}`);
+            games.append(gameWrapper);
+            let flexDiv = document.createElement('div');
+            flexDiv.setAttribute("class", "flex");
+            gameWrapper.append(flexDiv);
+
+            for (let i=0; i < numberOfPlayers; i++){
+                let playerDiv = document.createElement('div');
+                playerDiv.setAttribute("id", `playerr${i+1}${gameId}`);
+                flexDiv.append(playerDiv);
+            }
+
+            let statsDiv = document.createElement('div');
+            statsDiv.setAttribute("id", `statss${gameId}`);
+            gameWrapper.append(statsDiv);
+
+            let bugCounterDiv = document.createElement('div');
+            bugCounterDiv.setAttribute("id", `bugCounter${gameId}`);
+            gameWrapper.append(bugCounterDiv);
+        }
+
         endGame(){
             let bugTotal = 0;
             for (let player of this.players){
@@ -178,8 +194,9 @@
     }
 
 
-    let game = new Game(4);
+    let game = new Game(4, 1);
     game.start();
+
     }
   
   </script>
