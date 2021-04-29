@@ -19,10 +19,26 @@ h2 {
     text-transform: capitalize;
 }
 
-#stats {
+.stats {
     background-color: #fea175;
     margin: 1rem;
     padding: 1rem;
     font-size: 2rem;
     text-align: center;
+}
+
+.bugCounter {
+    margin: 1rem;
+    padding: 1rem;
+    font-size: 2rem;
+    text-align:center;
+    background-color: #fef0ba;
+}
+
+#allGamesStats {
+    margin: 1rem;
+    padding: 1rem;
+    font-size: 2rem;
+    text-align:center;
+    background-color: #3cd7c9;
 }
