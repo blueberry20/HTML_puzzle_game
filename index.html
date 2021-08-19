@@ -3,8 +3,8 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Creative Mango Design </title>
-  <meta name="description" content="Creative Mango Design. Creator of Animal Action cards, DIY Advent Calendar Kit, and other games and activities for kids. Author/illustrator Olga Smith - created by mom for her child.">
+  <title>HTML game </title>
+  <meta name="description" content="HTML game.">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="google-site-verification" content="kOZL2GXFgFikI3ovwDiWV7N0oxWnIkYg8rEMivmN2LY" />
   <meta property="og:title" content="Creative Mango. Fun and engaging games for kids. Created by mom for her child.">
@@ -20,10 +20,10 @@
 
 <body>
  <main>
-     <div id="games">
-    </div>
     <div id="allGamesStats">
         <h2>All Games Stats</h2>
+    </div>
+    <div id="games">
     </div>
  </main>
 
@@ -31,11 +31,12 @@
 
   <script>
     window.onload = function() {
-        const spinnerElements = ["a", "li", "h2", "bug", "li", "img", "bug fix", "li", "h1", "p", "li", "bug fix"];
+        const spinnerElements = ["a", "any", "h2", "bug", "li", "img", "bug fix", "any", "h1", "p", "li", "bug fix"];
 
         const bugChips = ["a", "li", "h2", "li", "img", "li", "h1", "p", "li", "a", "li", "h2", "li", "img", "li", "h1", "p", "li"];
 
-        let allTurnsNumber = [];
+        let allGamesNumberOfTurns = [];
+        let allGamesNumberOfBugs = [];
         const allGamesDiv = document.getElementById('allGamesStats');
 
         class Player {
@@ -60,7 +61,7 @@
                 const randomElement =  spinnerElements[Math.floor(Math.random() * spinnerElements.length)];
 
                 let playerDiv= document.getElementById(`${this.name}${this.gameId}`);
-                playerDiv.innerHTML += randomElement +"<br/>";
+                playerDiv.innerHTML += `<p>${randomElement}</p>`;
 
                 if (randomElement == "li"){
                     if (this.filledSpaces["li"] < 4) {
@@ -70,37 +71,71 @@
                 else if (randomElement == "bug"){
                     this.bugCounter++;
                     const bugChip = this.takeBugChip();
-                    playerDiv.innerHTML += "Took bug chip: " + bugChip +"<br/>";
+                    playerDiv.innerHTML += "<p>Took bug chip: " + bugChip +"</p>";
 
-                    //check if that space is filled
+                    //check if that space is filled, if it's not filled - nothing happens
                     if (this.filledSpaces[bugChip] == true || this.filledSpaces[bugChip] > 0){
 
-                        //check if bug for this tag already exists - don't add if exists
-                        // if (this.bugs.includes(bugChip)){
-                        //     if (bugChip == "li"){
+                        //check if bug for this tag already exists 
+                        if (this.bugs.includes(bugChip)){
+                            playerDiv.innerHTML += "<p>Bug for this tag exists</p>";
+                            //for li, allow adding 4 li bugs
+                            if (bugChip == "li"){
+                                //count how many li's are in the bug list
+                                let liBugCounter = 0;
+                                for (let tag of this.bugs){
+                                    if (tag == "li"){
+                                        liBugCounter++;
+                                    }
+                                }
+                                console.log(liBugCounter);
+                            }
+                        }
+                        else { //if bug for this tag doesn't exist yet
+                            playerDiv.innerHTML += "<p>Bug for this tag doesn't exist</p>";
+                            this.bugs.push(bugChip);
+                        }
 
-                        //     }
-                        // }
-                        // else { //if bug for this tag doesn't exist yet
-                        //     this.bugs.push(bugChip);
-                        // }
-
-                        this.bugs.push(bugChip);
-                        playerDiv.innerHTML += "Current bugs: " + this.bugs +"<br/>";
+                        //this.bugs.push(bugChip);
+                        playerDiv.innerHTML += "<p><b>Current bugs: " + this.bugs +"</b></p>";
                     }
                 }
                 else if (randomElement == "bug fix"){
                     //check if any bugs are present 
                     if (this.bugs.length > 0){
                         this.bugs.shift();
-                        playerDiv.innerHTML += "Bug fixed. Current bugs: " + this.bugs +"<br/>";
+                        playerDiv.innerHTML += "<p>Bug fixed. Current bugs: " + this.bugs +"</p>";
                     }
                     else {
                         //no bugs present, take another turn
-                        playerDiv.innerHTML += "Take extra turn <br/>";
+                        playerDiv.innerHTML += "<p>Take extra turn </p>";
                         this.spinWheel();
                     }
                                 
+                } 
+                else if (randomElement == "any"){ //take any tag
+                    //find first empty space on board
+                    playerDiv.innerHTML += `<p>Can choose any tag. My current board ${JSON.stringify(this.filledSpaces)}</p>`;
+
+                    //check if all boolean tags are filled
+                    if (Object.values(this.filledSpaces).indexOf(false) < 0) {
+                        playerDiv.innerHTML += `<p>All boolean tags are filled.</p>`;
+
+                        //check if all li spaces are filled
+                        if (this.filledSpaces["li"] < 4){
+                            this.filledSpaces["li"] +=1;
+                            playerDiv.innerHTML += `<p>Filled li tag. My current board ${JSON.stringify(this.filledSpaces)}</p>`;
+                        }
+                    }
+                    else { //boolean tags are not filled
+                        for (let tag in this.filledSpaces){
+                            if (this.filledSpaces[tag] == false){
+                                this.filledSpaces[tag] = true;
+                                playerDiv.innerHTML += `<p>Filled one empty tag on my board. My current board ${JSON.stringify(this.filledSpaces)}</p>`;
+                                break;
+                            }
+                        }
+                    }
                 }
                 else {
                     if (this.filledSpaces[randomElement] == false) {
@@ -131,7 +166,7 @@
                     this.players.push(player);
 
                     let playerDiv = document.getElementById(`player${i+1}${this.gameId}`);
-                    playerDiv.innerHTML = "<h2>" + player.name + "</h2><br/>";
+                    playerDiv.innerHTML = "<h2>" + player.name + "</h2>";
                 }
 
                 let turnCounter = 0;
@@ -142,8 +177,8 @@
                         player.takeTurn();
                         if (player.hasWon()) {
                             this.gameOver = true;
-                            statsDiv.innerHTML += `${player.name} won <br/>`;
-                            statsDiv.innerHTML += `It took ${turnCounter} turns`;
+                            statsDiv.innerHTML += `<p>${player.name} won </p>`;
+                            statsDiv.innerHTML += `<p>It took ${turnCounter} turns</p>`;
                             this.endGame(this.gameId, turnCounter);
                             break;
                         }
@@ -184,33 +219,41 @@
                 const bugCounterDiv = document.getElementById(`bugCounter${gameId}`);
                 let bugTotal = 0;
                 for (let player of this.players){
-                    bugCounterDiv.innerHTML += `${player.name} had ${player.bugCounter} bugs <br/>`;
+                    bugCounterDiv.innerHTML += `<p>${player.name} had ${player.bugCounter} bugs </p>`;
                     bugTotal += player.bugCounter;
+                    allGamesNumberOfBugs.push(player.bugCounter);
                 }
                 const bugAverage = bugTotal/ this.numberOfPlayers;
-                bugCounterDiv.innerHTML += `Bug Average: ${bugAverage}<br/>`;
+                bugCounterDiv.innerHTML += `<p>Bug Average: ${bugAverage}</p>`;
 
                 //add number of turns to array of turns for all games
-                allTurnsNumber.push(turnCounter);
+                allGamesNumberOfTurns.push(turnCounter);
             }
         }
 
 
-        for (let i=0; i <10; i++){
+        for (let i=0; i <1500; i++){
             let game = new Game(4, i);
             game.start();
         }
 
 
-        const shortestNumberOfTurns = Math.min(...allTurnsNumber);
-        console.log(shortestNumberOfTurns);
+        const shortestNumberOfTurns = Math.min(...allGamesNumberOfTurns);
+        const longestNumberOfTurnds = Math.max(...allGamesNumberOfTurns);
+        const smallestNumberOfBugs = Math.min(...allGamesNumberOfBugs);
+        const largestNumberOfBugs = Math.max(...allGamesNumberOfBugs);
 
-        const longestNumberOfTurnds = Math.max(...allTurnsNumber);
-        console.log(longestNumberOfTurnds);
+        let average = (array) => array.reduce((a, b) => a + b) / array.length;
 
-        allGamesDiv.innerHTML += `Shortest number of turns for all games: ${shortestNumberOfTurns} <br/>`;
-        allGamesDiv.innerHTML += `Longest number of turns for all games: ${longestNumberOfTurnds}`;
+        const averageNumberOfTurnsForAllGames = average(allGamesNumberOfTurns);
+        const averageBugsForAllGames = average(allGamesNumberOfBugs);
 
+        allGamesDiv.innerHTML += `<p>Shortest number of turns for all games: ${shortestNumberOfTurns} </p>`;
+        allGamesDiv.innerHTML += `<p>Longest number of turns for all games: ${longestNumberOfTurnds} </p>`;
+        allGamesDiv.innerHTML += `<p>Average number of turns for all games: ${averageNumberOfTurnsForAllGames} </p>`;
+        allGamesDiv.innerHTML += `<p>Smallest number of bugs for all games: ${smallestNumberOfBugs} </p>`;
+        allGamesDiv.innerHTML += `<p>Largest number of bugs for all games: ${largestNumberOfBugs} </p>`;
+        allGamesDiv.innerHTML += `<p>Average number of bugs for all games: ${averageBugsForAllGames} </p>`;
     }
   
   </script>

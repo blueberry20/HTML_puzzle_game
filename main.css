@@ -8,6 +8,7 @@
     margin: 1rem;
     padding: 1rem;
     font-size:1.2rem;
+    word-break: break-all;
 }
 
 main {
@@ -20,7 +21,7 @@ h2 {
 }
 
 .stats {
-    background-color: #fea175;
+    background-color: #f2a3c7;
     margin: 1rem;
     padding: 1rem;
     font-size: 2rem;
@@ -40,5 +41,5 @@ h2 {
     padding: 1rem;
     font-size: 2rem;
     text-align:center;
-    background-color: #3cd7c9;
+    background-color: #f8b095;
 }
